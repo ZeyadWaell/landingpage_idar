@@ -12,10 +12,21 @@ Adapted from the Nahla production pipeline (`.github/workflows/main.yml` in Nahl
 ## Server prerequisites
 
 1. **Self-hosted GitHub Actions runner** registered on the production server.
-2. **Node.js 20.x** and **npm** installed.
+2. **Node.js 20.9+** installed **system-wide** (Next.js 16 will not run on Node 18; PM2 uses the system `node`, not only the Actions job Node).
 3. **PM2** (`npm i -g pm2`).
 4. **rsync** available on the runner host.
 5. Deploy directory: `/var/www/idar-landing` (override via workflow `DEPLOY_PATH` if needed).
+
+## Upgrade Node.js on the server (required)
+
+If `node -v` shows v18.x, upgrade before starting the app:
+
+```bash
+curl -fsSL https://deb.nodesource.com/setup_20.x | sudo -E bash -
+sudo apt-get install -y nodejs
+node -v   # must be v20.9.0 or higher
+sudo npm install -g pm2
+```
 
 ## First-time server setup
 

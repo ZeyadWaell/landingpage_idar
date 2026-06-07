@@ -23,6 +23,11 @@ jobs:
           node-version: ${{ env.NODE_VERSION }}
           cache: npm
 
+      - name: Verify Node.js version
+        run: |
+          node -v
+          node -e "const v=process.versions.node.split('.').map(Number); if(v[0]<20) { console.error('Node 20+ required for Next.js 16. Upgrade system Node — PM2 uses the same node as the shell.'); process.exit(1) }"
+
       - name: Ensure target directory
         run: sudo mkdir -p ${{ env.DEPLOY_PATH }}
 
