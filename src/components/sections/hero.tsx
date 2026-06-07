@@ -2,12 +2,113 @@
 
 import Image from "next/image";
 import { motion } from "motion/react";
+import { useEffect, useLayoutEffect, useMemo, useRef } from "react";
 import { useLanguage } from "@/i18n/language-provider";
 import { Button } from "@/components/ui/button";
-import { Container } from "@/components/ui/container";
 import { HeroShowcaseImage } from "@/components/sections/hero-showcase-image";
 import { PartnerLogos } from "@/components/sections/partner-logos";
 import { cn } from "@/lib/utils";
+
+const MARQUEE_LOOP_SECONDS = 32;
+
+function HeroMarquee({
+  phrases,
+  isAr,
+}: {
+  phrases: readonly string[];
+  isAr: boolean;
+}) {
+  const trackRef = useRef<HTMLDivElement>(null);
+  const loopWidthRef = useRef(0);
+  const offsetRef = useRef(0);
+  const copies = 4;
+  const items = useMemo(
+    () => Array.from({ length: copies }, () => phrases).flat(),
+    [phrases],
+  );
+  const copyCount = phrases.length;
+
+  useLayoutEffect(() => {
+    const track = trackRef.current;
+    if (!track) return;
+
+    const measure = () => {
+      const oneCopyWidth = track.scrollWidth / copies;
+      loopWidthRef.current = oneCopyWidth;
+      if (offsetRef.current >= oneCopyWidth && oneCopyWidth > 0) {
+        offsetRef.current %= oneCopyWidth;
+      }
+    };
+
+    void document.fonts.ready.then(measure);
+    measure();
+
+    const observer = new ResizeObserver(measure);
+    observer.observe(track);
+
+    return () => observer.disconnect();
+  }, [phrases, isAr]);
+
+  useEffect(() => {
+    const track = trackRef.current;
+    if (!track) return;
+
+    let frame = 0;
+    let lastTime = 0;
+
+    const tick = (time: number) => {
+      if (!lastTime) lastTime = time;
+      const delta = (time - lastTime) / 1000;
+      lastTime = time;
+
+      const loopWidth = loopWidthRef.current;
+      if (loopWidth > 0) {
+        offsetRef.current += (loopWidth / MARQUEE_LOOP_SECONDS) * delta;
+        if (offsetRef.current >= loopWidth) {
+          offsetRef.current %= loopWidth;
+        }
+        track.style.transform = `translate3d(-${offsetRef.current}px, 0, 0)`;
+      }
+
+      frame = requestAnimationFrame(tick);
+    };
+
+    frame = requestAnimationFrame(tick);
+    return () => cancelAnimationFrame(frame);
+  }, [phrases, isAr]);
+
+  return (
+    <div className="relative z-10 shrink-0 overflow-hidden pb-2" style={{ direction: "ltr" }}>
+      <div className="w-full overflow-hidden [mask-image:linear-gradient(90deg,transparent,black_15%,black_85%,transparent)]">
+        <div
+          ref={trackRef}
+          dir="ltr"
+          className="flex w-max flex-nowrap items-center gap-10 will-change-transform sm:gap-14"
+        >
+          {items.map((phrase, index) => (
+            <span
+              key={`${phrase}-${index}`}
+              className="flex shrink-0 items-center gap-10 whitespace-nowrap sm:gap-14"
+              aria-hidden={index >= copyCount}
+            >
+              <span
+                className={cn(
+                  "text-3xl font-bold leading-none text-white/80 sm:text-5xl lg:text-6xl xl:text-7xl",
+                  isAr
+                    ? "font-[var(--font-cairo)] normal-case"
+                    : "uppercase tracking-tight",
+                )}
+              >
+                {phrase}
+              </span>
+              <span className="h-3 w-3 shrink-0 rounded-full bg-white/90 sm:h-4 sm:w-4" />
+            </span>
+          ))}
+        </div>
+      </div>
+    </div>
+  );
+}
 
 const easeOut = [0.22, 1, 0.36, 1] as const;
 
@@ -32,16 +133,32 @@ export function Hero() {
         <div className="absolute top-1/3 left-[-6%] h-[360px] w-[360px] rounded-full bg-[#d1e0ff]/30 blur-3xl" />
       </div>
 
-      <Container>
-        {/* Two-column hero */}
-        <div className="grid items-start gap-10 lg:grid-cols-[minmax(0,0.82fr)_minmax(0,1.18fr)] lg:gap-8">
-          {/* Left — copy */}
+      <div className="relative w-full min-h-[540px] overflow-hidden rounded-[5px] sm:min-h-[580px] lg:min-h-[620px]">
+        <div className="absolute inset-0 overflow-hidden rounded-[5px]">
+          <Image
+            src="/background.png"
+            alt=""
+            fill
+            priority
+            sizes="100vw"
+            className={cn(
+              "pointer-events-none object-cover object-center transition-transform duration-300",
+              !isAr && "-scale-x-100",
+            )}
+          />
+          <div
+            className="pointer-events-none absolute inset-0 bg-gradient-to-r from-white/95 via-white/80 to-white/40 rtl:bg-gradient-to-l"
+            aria-hidden
+          />
+        </div>
+
+        <div className="relative z-10 flex min-h-[540px] w-full flex-col justify-center px-4 py-8 sm:min-h-[580px] sm:px-6 sm:py-10 lg:min-h-[620px] lg:items-start lg:px-10 lg:py-12 xl:px-14 2xl:px-20">
           <motion.div
             custom={0}
             variants={fade}
             initial="hidden"
             animate="show"
-            className="relative z-10 min-w-0"
+            className="max-w-2xl text-start"
           >
             <span className="inline-flex items-center gap-2 rounded-full border border-[#d1e0ff] bg-[#eff4ff]/80 px-4 py-1.5 text-sm font-medium text-[#0040c1]">
               <svg className="h-4 w-4 shrink-0" viewBox="0 0 24 24" fill="none" aria-hidden>
@@ -96,28 +213,8 @@ export function Hero() {
               </Button>
             </motion.div>
           </motion.div>
-
-          {/* Right — illustration (contained in column) */}
-          <motion.div
-            custom={2}
-            variants={fade}
-            initial="hidden"
-            animate="show"
-            className="relative min-w-0 overflow-hidden"
-          >
-            <div className="flex justify-center lg:justify-end">
-              <Image
-                src="/image1212.png"
-                alt=""
-                width={1600}
-                height={1600}
-                priority
-                className="h-auto w-full max-w-full scale-[1.02] select-none object-contain object-center sm:scale-[1.04] lg:origin-right lg:scale-[1.08] lg:object-right xl:scale-[1.12]"
-              />
-            </div>
-          </motion.div>
         </div>
-      </Container>
+      </div>
 
       {/* Partner band with centered laptop */}
       <div className="relative mx-auto mt-10 w-full max-w-7xl px-3 sm:mt-12 sm:px-4 lg:mt-14 lg:max-w-[80rem] lg:px-5 xl:max-w-[84rem]">
@@ -135,32 +232,7 @@ export function Hero() {
               <HeroShowcaseImage centered className="pointer-events-auto" />
             </div>
 
-            {/* Top — moving marquee */}
-            <div className="relative z-10 shrink-0 overflow-hidden pb-2">
-              <div className="w-full overflow-hidden [mask-image:linear-gradient(90deg,transparent,black_15%,black_85%,transparent)]">
-                <div
-                  dir="ltr"
-                  className={cn(
-                    "flex w-max animate-marquee items-center gap-10 pe-10 font-bold leading-none tracking-tight text-white/80 sm:gap-14 sm:pe-14",
-                    isAr ? "normal-case font-[var(--font-cairo)]" : "uppercase",
-                  )}
-                >
-                  {[...Array(2)].flatMap((_, loop) =>
-                    t.hero.marqueePhrases.map((phrase, i) => (
-                      <span
-                        key={`${loop}-${i}-${phrase}`}
-                        className="flex shrink-0 items-center gap-10 sm:gap-14"
-                      >
-                        <span className="text-3xl sm:text-5xl lg:text-6xl xl:text-7xl">
-                          {phrase}
-                        </span>
-                        <span className="h-3 w-3 shrink-0 rounded-full bg-white/90 sm:h-4 sm:w-4" />
-                      </span>
-                    )),
-                  )}
-                </div>
-              </div>
-            </div>
+            <HeroMarquee phrases={t.hero.marqueePhrases} isAr={isAr} />
 
             <div className="relative z-10 flex-1" aria-hidden />
 

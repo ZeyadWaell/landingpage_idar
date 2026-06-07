@@ -2,29 +2,28 @@
 
 import { AnimatePresence, motion } from "motion/react";
 import { useState } from "react";
-import { faqItems } from "@/data/faq";
 import { Section } from "@/components/ui/section";
 import { Reveal } from "@/components/ui/motion";
+import { useLanguage } from "@/i18n/language-provider";
 
 export function Faq() {
+  const { t } = useLanguage();
+  const f = t.faq;
   const [open, setOpen] = useState<number | null>(0);
 
   return (
     <Section id="faq">
       <Reveal className="mx-auto max-w-2xl text-center">
         <p className="text-sm font-semibold uppercase tracking-widest text-[#0040c1] dark:text-[#699aff]">
-          FAQ
+          {f.badge}
         </p>
         <h2 className="mt-3 text-3xl font-bold tracking-tight text-[#0a0a0a] sm:text-4xl dark:text-white">
-          Frequently asked questions
+          {f.title}
         </h2>
       </Reveal>
 
-      <Reveal
-        delay={0.1}
-        className="mx-auto mt-14 max-w-3xl space-y-3"
-      >
-        {faqItems.map((item, i) => {
+      <Reveal delay={0.1} className="mx-auto mt-14 max-w-3xl space-y-3">
+        {f.items.map((item, i) => {
           const isOpen = open === i;
           return (
             <div

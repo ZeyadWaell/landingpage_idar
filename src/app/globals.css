@@ -75,7 +75,7 @@ h1, h2, h3, h4 {
   }
 }
 
-/* Subtle marquee for the trust strip */
+/* Hero marquee — duplicate track halves must stay dir=ltr for seamless -50% loop */
 @keyframes marquee {
   from {
     transform: translateX(0);
@@ -95,6 +95,62 @@ h1, h2, h3, h4 {
     animation: none;
   }
 }
+
+/* Channel manager hub — 2 steps right, 3 steps back */
+@keyframes channel-hub-step {
+  0%,
+  100% {
+    transform: rotate(0deg);
+  }
+  12% {
+    transform: rotate(0deg);
+  }
+  18% {
+    transform: rotate(45deg);
+  }
+  28% {
+    transform: rotate(45deg);
+  }
+  34% {
+    transform: rotate(90deg);
+  }
+  44% {
+    transform: rotate(90deg);
+  }
+  50% {
+    transform: rotate(45deg);
+  }
+  58% {
+    transform: rotate(45deg);
+  }
+  64% {
+    transform: rotate(0deg);
+  }
+  72% {
+    transform: rotate(0deg);
+  }
+  78% {
+    transform: rotate(-45deg);
+  }
+  88% {
+    transform: rotate(-45deg);
+  }
+  94% {
+    transform: rotate(0deg);
+  }
+}
+
+.animate-channel-hub-step {
+  animation: channel-hub-step 5s ease-in-out infinite;
+  will-change: transform;
+}
+
+@media (prefers-reduced-motion: reduce) {
+  .animate-channel-hub-step {
+    animation: none;
+  }
+}
+
 
 /* Nav flip text — Freelancer.com CodePen style (translateY + FLIP) */
 .nav-flip-hidden {

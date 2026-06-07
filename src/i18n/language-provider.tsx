@@ -4,9 +4,8 @@ import {
   createContext,
   useCallback,
   useContext,
-  useEffect,
   useMemo,
-  useState,
+  useSyncExternalStore,
   type ReactNode,
 } from "react";
 import { getDictionary } from "./dictionaries";
@@ -25,24 +24,29 @@ type LanguageContextValue = {
 
 const LanguageContext = createContext<LanguageContextValue | null>(null);
 
+const localeListeners = new Set<() => void>();
+
 function readStoredLocale(): Locale {
   if (typeof window === "undefined") return "en";
   const stored = localStorage.getItem(STORAGE_KEY);
   return stored === "ar" ? "ar" : "en";
 }
 
-export function LanguageProvider({ children }: { children: ReactNode }) {
-  const [locale, setLocaleState] = useState<Locale>("en");
-  const [ready, setReady] = useState(false);
+function subscribeLocale(listener: () => void) {
+  localeListeners.add(listener);
+  return () => localeListeners.delete(listener);
+}
 
-  useEffect(() => {
-    setLocaleState(readStoredLocale());
-    setReady(true);
-  }, []);
+function emitLocaleChange() {
+  localeListeners.forEach((listener) => listener());
+}
+
+export function LanguageProvider({ children }: { children: ReactNode }) {
+  const locale = useSyncExternalStore(subscribeLocale, readStoredLocale, () => "en");
 
   const setLocale = useCallback((next: Locale) => {
-    setLocaleState(next);
     localStorage.setItem(STORAGE_KEY, next);
+    emitLocaleChange();
   }, []);
 
   const toggleLocale = useCallback(() => {
@@ -59,22 +63,6 @@ export function LanguageProvider({ children }: { children: ReactNode }) {
     }),
     [locale, setLocale, toggleLocale],
   );
-
-  if (!ready) {
-    return (
-      <LanguageContext.Provider
-        value={{
-          locale: "en",
-          setLocale: () => {},
-          toggleLocale: () => {},
-          t: getDictionary("en"),
-          dir: "ltr",
-        }}
-      >
-        {children}
-      </LanguageContext.Provider>
-    );
-  }
 
   return (
     <LanguageContext.Provider value={value}>{children}</LanguageContext.Provider>

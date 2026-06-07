@@ -1,0 +1,65 @@
+name: Deploy to Production
+
+on:
+  push:
+    branches: [production]
+
+env:
+  APP_NAME: idar-landing
+  DEPLOY_PATH: /var/www/idar-landing
+  NODE_VERSION: "20.x"
+
+jobs:
+  deploy:
+    runs-on: self-hosted
+
+    steps:
+      - name: Checkout
+        uses: actions/checkout@v4
+
+      - name: Setup Node.js
+        uses: actions/setup-node@v4
+        with:
+          node-version: ${{ env.NODE_VERSION }}
+          cache: npm
+
+      - name: Ensure target directory
+        run: sudo mkdir -p ${{ env.DEPLOY_PATH }}
+
+      - name: Sync files to server path (keep server .env)
+        run: |
+          rsync -a --delete \
+            --exclude ".git" \
+            --exclude "node_modules" \
+            --exclude ".next" \
+            --exclude ".env" \
+            --exclude ".env.*" \
+            --exclude ".cursor" \
+            ./ ${{ env.DEPLOY_PATH }}/
+          sudo chown -R $(whoami):$(whoami) ${{ env.DEPLOY_PATH }}
+
+      - name: Install and build
+        env:
+          NEXT_TELEMETRY_DISABLED: 1
+          NODE_ENV: production
+        run: |
+          cd ${{ env.DEPLOY_PATH }}
+          npm ci
+          npm run build
+
+      - name: Start or reload with PM2
+        env:
+          NODE_ENV: production
+          PM2_HOME: ${{ env.HOME }}/.pm2
+        run: |
+          command -v pm2 >/dev/null 2>&1 || sudo npm i -g pm2
+
+          cd ${{ env.DEPLOY_PATH }}
+          if pm2 describe ${{ env.APP_NAME }} >/dev/null 2>&1; then
+            pm2 reload cicd/ecosystem.config.cjs --update-env
+          else
+            pm2 start cicd/ecosystem.config.cjs
+          fi
+
+          pm2 save
+          pm2 status

@@ -31,18 +31,58 @@ const cairo = Cairo({
 });
 
 export const metadata: Metadata = {
+  metadataBase: new URL(siteConfig.url),
   title: {
     default: `${siteConfig.name} — ${siteConfig.tagline}`,
     template: `%s | ${siteConfig.name}`,
   },
   description: siteConfig.description,
-  metadataBase: new URL(siteConfig.url),
+  keywords: [...siteConfig.keywords],
+  authors: [{ name: siteConfig.name, url: siteConfig.url }],
+  creator: siteConfig.name,
+  publisher: siteConfig.name,
+  applicationName: siteConfig.name,
+  robots: {
+    index: true,
+    follow: true,
+    googleBot: {
+      index: true,
+      follow: true,
+      "max-image-preview": "large",
+      "max-snippet": -1,
+    },
+  },
+  alternates: {
+    canonical: "/",
+  },
+  icons: {
+    icon: [
+      { url: siteConfig.iconSrc, sizes: "48x48", type: "image/png" },
+      { url: siteConfig.iconSrc, sizes: "192x192", type: "image/png" },
+    ],
+    apple: [{ url: siteConfig.iconSrc, sizes: "180x180", type: "image/png" }],
+    shortcut: siteConfig.iconSrc,
+  },
   openGraph: {
-    title: siteConfig.name,
-    description: siteConfig.description,
+    type: "website",
+    locale: "en_US",
+    alternateLocale: ["ar_SA"],
     url: siteConfig.url,
     siteName: siteConfig.name,
-    type: "website",
+    title: `${siteConfig.name} — ${siteConfig.tagline}`,
+    description: siteConfig.description,
+    images: [
+      {
+        url: siteConfig.logoSrc,
+        alt: `${siteConfig.name} logo`,
+      },
+    ],
+  },
+  twitter: {
+    card: "summary_large_image",
+    title: `${siteConfig.name} — ${siteConfig.tagline}`,
+    description: siteConfig.description,
+    images: [siteConfig.logoSrc],
   },
 };
 

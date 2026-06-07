@@ -6,32 +6,44 @@ import { useEffect, useState, type ReactNode } from "react";
 import { siteConfig } from "@/config/site";
 
 const LOGO_HOLD_MS = 2000;
-const EXIT_MS = 900;
+const EXIT_MS = 1100;
 
 const easeSmooth = [0.65, 0, 0.35, 1] as const;
 
-function SplashLogo() {
+function SplashLogo({ exiting }: { exiting: boolean }) {
   return (
     <motion.div
       initial={{ opacity: 0, scale: 0.88, y: 20 }}
-      animate={{ opacity: 1, scale: 1, y: 0 }}
-      transition={{ duration: 0.75, ease: easeSmooth, delay: 0.12 }}
+      animate={
+        exiting
+          ? { opacity: 0, scale: 0.98, filter: "blur(8px)" }
+          : { opacity: 1, scale: 1, y: 0, x: 0, filter: "blur(0px)" }
+      }
+      transition={{
+        duration: exiting ? EXIT_MS / 1000 : 0.75,
+        ease: easeSmooth,
+        delay: exiting ? 0 : 0.12,
+      }}
     >
       <Image
-        src={siteConfig.logoSrc}
+        src="/lgogowhite.png"
         alt={siteConfig.name}
         width={1536}
         height={1024}
         priority
-        className="h-32 w-auto object-contain mix-blend-screen sm:h-40 md:h-48 lg:h-56 xl:h-64"
+        className="h-48 w-auto max-w-[min(92vw,720px)] object-contain sm:h-60 md:h-72 lg:h-80 xl:h-96 2xl:h-[28rem]"
       />
     </motion.div>
   );
 }
 
-function SplashPanel() {
+function SplashPanel({ exiting }: { exiting: boolean }) {
   return (
-    <div className="relative flex h-full w-full flex-col overflow-hidden">
+    <motion.div
+      className="relative flex h-full w-full flex-col overflow-hidden"
+      animate={{ opacity: exiting ? 0 : 1 }}
+      transition={{ duration: EXIT_MS / 1000, ease: easeSmooth, delay: exiting ? 0.15 : 0 }}
+    >
       {/* Gradient background */}
       <div
         className="absolute inset-0 bg-gradient-to-r from-[#0c2d6e] via-[#0f4db8] to-[#1a6fe8]"
@@ -57,21 +69,9 @@ function SplashPanel() {
 
       {/* Logo */}
       <div className="relative z-10 flex flex-1 items-center justify-center">
-        <SplashLogo />
+        <SplashLogo exiting={exiting} />
       </div>
-
-      {/* Badge */}
-      <div className="relative z-10 flex justify-end p-6 sm:p-8">
-        <motion.div
-          className="flex items-center gap-2 rounded-lg bg-white/95 px-3 py-2 text-xs font-medium text-[#171717] shadow-sm"
-          initial={{ opacity: 0, y: 12 }}
-          animate={{ opacity: 1, y: 0 }}
-          transition={{ duration: 0.5, delay: 0.9 }}
-        >
-      
-        </motion.div>
-      </div>
-    </div>
+    </motion.div>
   );
 }
 
@@ -103,15 +103,12 @@ export function SplashScreen({ children }: { children: ReactNode }) {
   return (
     <>
       {children}
-      <motion.div
+      <div
         className="fixed inset-0 z-[200]"
-        initial={{ x: 0 }}
-        animate={{ x: phase === "exit" ? "100%" : 0 }}
-        transition={{ duration: EXIT_MS / 1000, ease: easeSmooth }}
         aria-hidden={phase === "exit"}
       >
-        <SplashPanel />
-      </motion.div>
+        <SplashPanel exiting={phase === "exit"} />
+      </div>
     </>
   );
 }

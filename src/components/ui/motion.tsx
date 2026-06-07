@@ -16,6 +16,8 @@ import {
 
 const easeOut = [0.22, 1, 0.36, 1] as const;
 
+type MotionAs = "div" | "ul" | "li" | "ol" | "section";
+
 /** Fade + rise that triggers once when scrolled into view. */
 export function Reveal({
   children,
@@ -30,18 +32,26 @@ export function Reveal({
   y?: number;
   as?: ElementType;
 }) {
-  const MotionTag = motion(as as ElementType);
-  return (
-    <MotionTag
-      className={className}
-      initial={{ opacity: 0, y }}
-      whileInView={{ opacity: 1, y: 0 }}
-      viewport={{ once: true, margin: "-80px" }}
-      transition={{ duration: 0.6, ease: easeOut, delay }}
-    >
-      {children}
-    </MotionTag>
-  );
+  const motionProps = {
+    className,
+    initial: { opacity: 0, y },
+    whileInView: { opacity: 1, y: 0 },
+    viewport: { once: true, margin: "-80px" },
+    transition: { duration: 0.6, ease: easeOut, delay },
+  };
+
+  switch (as as MotionAs) {
+    case "ul":
+      return <motion.ul {...motionProps}>{children}</motion.ul>;
+    case "li":
+      return <motion.li {...motionProps}>{children}</motion.li>;
+    case "ol":
+      return <motion.ol {...motionProps}>{children}</motion.ol>;
+    case "section":
+      return <motion.section {...motionProps}>{children}</motion.section>;
+    default:
+      return <motion.div {...motionProps}>{children}</motion.div>;
+  }
 }
 
 const staggerParent: Variants = {
@@ -70,18 +80,26 @@ export function RevealGroup({
   className?: string;
   as?: ElementType;
 }) {
-  const MotionTag = motion(as as ElementType);
-  return (
-    <MotionTag
-      className={className}
-      variants={staggerParent}
-      initial="hidden"
-      whileInView="show"
-      viewport={{ once: true, margin: "-80px" }}
-    >
-      {children}
-    </MotionTag>
-  );
+  const motionProps = {
+    className,
+    variants: staggerParent,
+    initial: "hidden" as const,
+    whileInView: "show" as const,
+    viewport: { once: true, margin: "-80px" },
+  };
+
+  switch (as as MotionAs) {
+    case "ul":
+      return <motion.ul {...motionProps}>{children}</motion.ul>;
+    case "li":
+      return <motion.li {...motionProps}>{children}</motion.li>;
+    case "ol":
+      return <motion.ol {...motionProps}>{children}</motion.ol>;
+    case "section":
+      return <motion.section {...motionProps}>{children}</motion.section>;
+    default:
+      return <motion.div {...motionProps}>{children}</motion.div>;
+  }
 }
 
 export function RevealItem({
@@ -93,12 +111,20 @@ export function RevealItem({
   className?: string;
   as?: ElementType;
 }) {
-  const MotionTag = motion(as as ElementType);
-  return (
-    <MotionTag className={className} variants={staggerChild}>
-      {children}
-    </MotionTag>
-  );
+  const motionProps = { className, variants: staggerChild };
+
+  switch (as as MotionAs) {
+    case "ul":
+      return <motion.ul {...motionProps}>{children}</motion.ul>;
+    case "li":
+      return <motion.li {...motionProps}>{children}</motion.li>;
+    case "ol":
+      return <motion.ol {...motionProps}>{children}</motion.ol>;
+    case "section":
+      return <motion.section {...motionProps}>{children}</motion.section>;
+    default:
+      return <motion.div {...motionProps}>{children}</motion.div>;
+  }
 }
 
 /** Number that counts up from 0 once it enters the viewport. */

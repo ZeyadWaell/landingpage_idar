@@ -1,6 +1,7 @@
 "use client";
 
 import Link from "next/link";
+import { BrandLogo } from "@/components/brand/brand-logo";
 import { siteConfig } from "@/config/site";
 import { Container } from "@/components/ui/container";
 import { useLanguage } from "@/i18n/language-provider";
@@ -12,19 +13,19 @@ export function Footer() {
   const footerLinks = useMemo(
     () => ({
       product: [
-        { label: t.nav.features, href: "#features" },
-        { label: t.nav.pricing, href: "#pricing" },
-        { label: t.nav.reviews, href: "#reviews" },
+        { label: t.nav.features, href: "/#features" },
+        { label: t.nav.pricing, href: "/#pricing" },
+        { label: t.nav.reviews, href: "/#reviews" },
       ],
       company: [
-        { label: t.footer.about, href: "#" },
-        { label: t.footer.blog, href: "#" },
-        { label: t.footer.careers, href: "#" },
+        { label: t.footer.about, href: "/about" },
+        { label: t.footer.blog, href: "/blog" },
+        { label: t.footer.careers, href: "/careers" },
       ],
       legal: [
-        { label: t.footer.privacy, href: "#" },
-        { label: t.footer.terms, href: "#" },
-        { label: t.footer.security, href: "#" },
+        { label: t.footer.privacy, href: "/privacy" },
+        { label: t.footer.terms, href: "/terms" },
+        { label: t.footer.security, href: "/security" },
       ],
     }),
     [t],
@@ -35,16 +36,8 @@ export function Footer() {
       <Container>
         <div className="grid gap-10 sm:grid-cols-2 lg:grid-cols-4">
           <div className="sm:col-span-2 lg:col-span-1">
-            <Link
-              href="/"
-              className="flex items-center gap-2 text-lg font-bold text-[#0a0a0a] dark:text-white"
-            >
-              <span className="flex h-7 w-7 items-center justify-center rounded-lg bg-[#0040c1] text-white">
-                <svg className="h-4 w-4" viewBox="0 0 24 24" fill="none" aria-hidden>
-                  <path d="M5 18l4 5 3 3 7-9" stroke="currentColor" strokeWidth="2.2" strokeLinecap="round" strokeLinejoin="round" />
-                </svg>
-              </span>
-              {siteConfig.name}
+            <Link href="/" className="inline-flex items-center">
+              <BrandLogo className="h-20 w-auto sm:h-24 md:h-28 lg:h-32" />
             </Link>
             <p className="mt-3 max-w-xs text-sm leading-relaxed text-[#171717]/60 dark:text-[#eff4ff]/60">
               {t.footer.tagline}

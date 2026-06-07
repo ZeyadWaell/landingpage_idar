@@ -1,10 +1,20 @@
 export const siteConfig = {
-  name: "Finovo",
-  logoSrc: "/logog.png",
-  tagline: "Smart platform for hotel management",
+  name: "Idar",
+  logoSrc: "/logo222g.png",
+  iconSrc: "/lgoo.png",
+  tagline: "Hotel & property management platform",
   description:
-    "A smart platform for managing properties, units, bookings, payments, and reports with ease and high efficiency.",
-  url: "https://finovo.example.com",
+    "Idar helps hotels and property managers run reservations, channel sync, guest operations, payments, and revenue reports from one platform.",
+  keywords: [
+    "property management system",
+    "hotel management software",
+    "channel manager",
+    "vacation rental management",
+    "Saudi Arabia PMS",
+    "booking management",
+    "Idar",
+  ],
+  url: "https://idar.example.com",
   hero: {
     cta: "Book a demo",
     trust: {
@@ -20,7 +30,7 @@ export const siteConfig = {
     partnerLine:
       "Partnering with the world's leading OTAs to distribute your rooms everywhere guests book.",
     otaPartners: [
-      "Booking.com",
+      "Booking",
       "Airbnb",
       "Expedia",
       "Agoda",

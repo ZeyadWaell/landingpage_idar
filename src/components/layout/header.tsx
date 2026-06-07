@@ -236,7 +236,7 @@ export function Header() {
         <div className="hidden items-center gap-1 md:flex">
           <LanguageToggle />
           <Link
-            href="#pricing"
+            href="/signup"
             className={cn(
               headerText,
               "rounded-full bg-[#0040c1] px-5 py-2.5 text-white transition-colors hover:bg-[#0035a1]",
@@ -307,7 +307,7 @@ export function Header() {
             />
           ))}
           <Link
-            href="#pricing"
+            href="/signup"
             className={cn(
               headerText,
               "mt-2 rounded-full bg-[#0040c1] px-5 py-2.5 text-center text-white",
