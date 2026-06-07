@@ -41,11 +41,11 @@ jobs:
       - name: Install and build
         env:
           NEXT_TELEMETRY_DISABLED: 1
-          NODE_ENV: production
         run: |
           cd ${{ env.DEPLOY_PATH }}
-          npm ci
-          npm run build
+          # Install devDependencies too — Tailwind/PostCSS/TypeScript are required for next build
+          npm ci --include=dev
+          NODE_ENV=production npm run build
 
       - name: Start or reload with PM2
         env:

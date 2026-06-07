@@ -37,7 +37,7 @@ Point your reverse proxy (nginx/Caddy) at `http://127.0.0.1:3000`.
 1. Merge changes into the `production` branch.
 2. Workflow checks out code on the self-hosted runner.
 3. Files are synced with `rsync` (`.env`, `node_modules`, `.next` are excluded).
-4. `npm ci` and `npm run build` run on the server.
+4. `npm ci --include=dev` and `npm run build` run on the server (dev deps are required for Tailwind/TypeScript at build time).
 5. PM2 reloads the `idar-landing` process via `cicd/ecosystem.config.cjs`.
 
 ## Branch strategy
