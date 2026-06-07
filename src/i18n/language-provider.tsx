@@ -42,7 +42,11 @@ function emitLocaleChange() {
 }
 
 export function LanguageProvider({ children }: { children: ReactNode }) {
-  const locale = useSyncExternalStore(subscribeLocale, readStoredLocale, () => "en");
+  const locale = useSyncExternalStore<Locale>(
+    subscribeLocale,
+    readStoredLocale,
+    () => "en",
+  );
 
   const setLocale = useCallback((next: Locale) => {
     localStorage.setItem(STORAGE_KEY, next);
