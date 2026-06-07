@@ -19,14 +19,22 @@ Adapted from the Nahla production pipeline (`.github/workflows/main.yml` in Nahl
 
 ## Upgrade Node.js on the server (required)
 
-If `node -v` shows v18.x, upgrade before starting the app:
+Next.js 16 needs **Node 20.9+**. If `node -v` shows v18.x, install Node 20 via **nvm** (works even when apt has repo conflicts):
 
 ```bash
-curl -fsSL https://deb.nodesource.com/setup_20.x | sudo -E bash -
-sudo apt-get install -y nodejs
+curl -o- https://raw.githubusercontent.com/nvm-sh/nvm/v0.40.1/install.sh | bash
+export NVM_DIR="$HOME/.nvm"
+[ -s "$NVM_DIR/nvm.sh" ] && . "$NVM_DIR/nvm.sh"
+
+nvm install 20
+nvm alias default 20
 node -v   # must be v20.9.0 or higher
-sudo npm install -g pm2
+
+npm install -g pm2
+pm2 update
 ```
+
+`cicd/ecosystem.config.cjs` auto-picks the nvm Node 20 binary for PM2.
 
 ## First-time server setup
 
