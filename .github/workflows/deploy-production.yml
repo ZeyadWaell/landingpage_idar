@@ -55,11 +55,8 @@ jobs:
           command -v pm2 >/dev/null 2>&1 || sudo npm i -g pm2
 
           cd ${{ env.DEPLOY_PATH }}
-          if pm2 describe ${{ env.APP_NAME }} >/dev/null 2>&1; then
-            pm2 reload cicd/ecosystem.config.cjs --update-env
-          else
-            pm2 start cicd/ecosystem.config.cjs
-          fi
-
+          # Delete + start so PM2 picks up ecosystem script/mode changes (reload keeps stale config)
+          pm2 delete ${{ env.APP_NAME }} 2>/dev/null || true
+          pm2 start cicd/ecosystem.config.cjs
           pm2 save
           pm2 status
