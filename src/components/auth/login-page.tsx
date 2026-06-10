@@ -1,10 +1,9 @@
 "use client";
 
 import Link from "next/link";
-import { useRouter } from "next/navigation";
 import { useState } from "react";
 import { login } from "@/lib/api/auth";
-import { getDashboardUrl } from "@/lib/api/config";
+import { buildDashboardHandoffUrl } from "@/lib/api/config";
 import { saveLoginSession } from "@/lib/auth/session";
 import { AuthAlert } from "@/components/auth/auth-alert";
 import { AuthField } from "@/components/auth/auth-field";
@@ -14,7 +13,6 @@ import { useLanguage } from "@/i18n/language-provider";
 export function LoginPage() {
   const { t, locale } = useLanguage();
   const l = t.auth.login;
-  const router = useRouter();
   const [loading, setLoading] = useState(false);
   const [error, setError] = useState<string | null>(null);
   const [details, setDetails] = useState<string | null>(null);
@@ -39,7 +37,23 @@ export function LoginPage() {
       }
 
       saveLoginSession(result.Data);
-      router.push(getDashboardUrl());
+
+      // Hand the session off to the Zaaer dashboard (different domain) via the
+      // auth-callback URL; the dashboard stores the tokens and signs the user in.
+      const returnUrl = new URLSearchParams(window.location.search).get("returnUrl");
+      window.location.assign(
+        buildDashboardHandoffUrl(
+          {
+            token: result.Data.token,
+            refreshToken: result.Data.refresh_token,
+            username: result.Data.username,
+            firstName: result.Data.first_name,
+            lastName: result.Data.last_name,
+            isSubscribed: result.Data.is_subscribed,
+          },
+          returnUrl,
+        ),
+      );
     } catch {
       setError(l.errors.network);
     } finally {
