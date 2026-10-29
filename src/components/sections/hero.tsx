@@ -6,7 +6,7 @@ import { useEffect, useLayoutEffect, useMemo, useRef } from "react";
 import { useLanguage } from "@/i18n/language-provider";
 import { Button } from "@/components/ui/button";
 import { HeroShowcaseImage } from "@/components/sections/hero-showcase-image";
-import { PartnerLogos } from "@/components/sections/partner-logos";
+import { OtaOrbit } from "@/components/sections/ota-orbit";
 import { cn } from "@/lib/utils";
 
 const MARQUEE_LOOP_SECONDS = 32;
@@ -216,9 +216,9 @@ export function Hero() {
         </div>
       </div>
 
-      {/* Partner band with centered laptop */}
+      {/* Partner band — OTA badges orbiting the centered laptop */}
       <div className="relative mx-auto mt-10 w-full max-w-7xl px-3 sm:mt-12 sm:px-4 lg:mt-14 lg:max-w-[80rem] lg:px-5 xl:max-w-[84rem]">
-          <div className="relative flex min-h-[540px] w-full flex-col overflow-hidden rounded-[32px] px-8 pt-4 sm:min-h-[580px] sm:px-12 sm:pt-5 lg:min-h-[620px] lg:pt-6">
+          <div className="relative isolate flex min-h-[540px] w-full flex-col overflow-hidden rounded-[32px] px-8 pt-4 sm:min-h-[580px] sm:px-12 sm:pt-5 lg:min-h-[620px] lg:pt-6">
             <Image
               src="/6.png"
               alt=""
@@ -234,16 +234,7 @@ export function Hero() {
 
             <HeroMarquee phrases={t.hero.marqueePhrases} isAr={isAr} />
 
-            <div className="relative z-10 flex-1" aria-hidden />
-
-            {/* Bottom — line + OTA logos */}
-            <div className="relative z-10 flex shrink-0 flex-col items-center px-4 pb-14 sm:pb-16 lg:pb-20">
-              <div
-                className="h-px w-full max-w-md bg-gradient-to-r from-transparent via-white to-transparent opacity-90 sm:max-w-xl md:max-w-2xl"
-                aria-hidden
-              />
-              <PartnerLogos className="mt-8 sm:mt-10" />
-            </div>
+            <OtaOrbit />
           </div>
         </div>
     </section>

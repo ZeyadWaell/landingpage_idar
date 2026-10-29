@@ -1,3 +1,14 @@
+export type OtaPartner = {
+  name: string;
+  logo: string;
+  /** Logo viewBox width ÷ height */
+  ratio: number;
+  /** Optical size tweak so wide wordmarks and stacked marks read at a similar weight */
+  scale: number;
+  /** Logo is a bare icon, so the name is printed beside it */
+  iconOnly?: boolean;
+};
+
 export const siteConfig = {
   name: "Idar",
   logoSrc: "/logo222g.png",
@@ -29,16 +40,17 @@ export const siteConfig = {
     ],
     partnerLine:
       "Partnering with the world's leading OTAs to distribute your rooms everywhere guests book.",
+    // Clockwise around the hero laptop, starting at the top
     otaPartners: [
-      "Booking",
-      "Airbnb",
-      "Expedia",
-      "Agoda",
-      "Hotels.com",
-      "Trip.com",
-      "Vrbo",
-      "Google Hotels",
-    ],
+      { name: "Booking.com", logo: "/ota/booking.svg", ratio: 6.02, scale: 0.95 },
+      { name: "Expedia", logo: "/ota/expedia.svg", ratio: 4.97, scale: 1.05 },
+      { name: "Airbnb", logo: "/ota/airbnb.svg", ratio: 3.2, scale: 1.25 },
+      { name: "Trip.com", logo: "/ota/trip.svg", ratio: 4.14, scale: 1.05 },
+      { name: "Google Hotels", logo: "/ota/google.svg", ratio: 1, scale: 1.25, iconOnly: true },
+      { name: "Vrbo", logo: "/ota/vrbo.svg", ratio: 3.13, scale: 1.25 },
+      { name: "Hotels.com", logo: "/ota/hotels.svg", ratio: 5.54, scale: 0.95 },
+      { name: "Agoda", logo: "/ota/agoda.svg", ratio: 1.94, scale: 1.75 },
+    ] as readonly OtaPartner[],
   },
   links: {
     twitter: "https://twitter.com",

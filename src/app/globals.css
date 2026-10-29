@@ -151,6 +151,23 @@ h1, h2, h3, h4 {
   }
 }
 
+/* OTA orbit — light streaks running along the ring around the hero laptop (pathLength = 100) */
+@keyframes ota-orbit-comet {
+  to {
+    stroke-dashoffset: -100;
+  }
+}
+
+.animate-ota-orbit-comet {
+  animation: ota-orbit-comet 12s linear infinite;
+}
+
+@media (prefers-reduced-motion: reduce) {
+  .animate-ota-orbit-comet {
+    animation: none;
+  }
+}
+
 
 /* Nav flip text — Freelancer.com CodePen style (translateY + FLIP) */
 .nav-flip-hidden {
