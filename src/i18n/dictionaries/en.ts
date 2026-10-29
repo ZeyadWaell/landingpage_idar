@@ -254,44 +254,13 @@ export const en = {
       },
     ],
   },
-  benefits: {
-    badge: "Benefits",
-    title: "Powerful workflows for",
-    titleHighlight: "property operations",
-    moreLabel: "...and more additional features",
-    cards: [
-      {
-        tag: "Operations automation",
-        title: "Automate guest journeys from booking to checkout",
-        description:
-          "Coordinate confirmations, pre-arrival messages, check-in tasks, and checkout reminders in one streamlined flow.",
-        points: ["Save front-desk time every day", "Reduce manual follow-ups and missed tasks"],
-        icon: "bolt",
-      },
-      {
-        tag: "Channel optimization",
-        title: "Keep rates and availability in sync across all channels",
-        description:
-          "Update inventory instantly on Airbnb, Booking.com, and direct channels to avoid overbookings and maximize occupancy.",
-        points: ["Prevent double bookings in real time", "Increase visibility where guests actually book"],
-        icon: "trending",
-      },
-      {
-        tag: "Finance visibility",
-        title: "Track payouts, performance, and property-level profit",
-        description:
-          "Monitor revenue, fees, and owner payouts with clear reporting so you can make faster, data-backed decisions.",
-        points: ["See accurate net revenue by property", "Export clean reports for owners and accounting"],
-        icon: "shield",
-      },
-    ],
-    additional: [
-      "Owner statements",
-      "Cleaning schedules",
-      "Team task tracking",
-      "Maintenance logs",
-      "Multi-property reporting",
-    ],
+  productVideo: {
+    badge: "Product tour",
+    title: "See Idar",
+    titleHighlight: "in action",
+    subtitle:
+      "A short walkthrough of how Idar runs reservations, units, channels, guest reviews, and finance for hotels, serviced apartments, and chalets.",
+    playLabel: "Play the Idar walkthrough video",
   },
   pricing: {
     badge: "Pricing",

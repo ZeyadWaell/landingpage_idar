@@ -1,13 +1,13 @@
 import type { Metadata } from "next";
 import { Footer } from "@/components/layout/footer";
 import { Header } from "@/components/layout/header";
-import { Benefits } from "@/components/sections/benefits";
 import { Cta } from "@/components/sections/cta";
 import { Faq } from "@/components/sections/faq";
 import { Features } from "@/components/sections/features";
 import { Hero } from "@/components/sections/hero";
 import { HowItWorks } from "@/components/sections/how-it-works";
 import { Pricing } from "@/components/sections/pricing";
+import { ProductVideo } from "@/components/sections/product-video";
 import { Stats } from "@/components/sections/stats";
 import { Testimonials } from "@/components/sections/testimonials";
 import { siteConfig } from "@/config/site";
@@ -64,7 +64,7 @@ export default function HomePage() {
       <main className="flex-1">
         <Hero />
         <Features />
-        <Benefits />
+        <ProductVideo />
         <Stats />
         <HowItWorks />
         <Testimonials />
