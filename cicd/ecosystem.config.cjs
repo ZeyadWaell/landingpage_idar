@@ -29,7 +29,7 @@ module.exports = {
   apps: [
     {
       name: "idar-landing",
-      cwd: "/var/www/idar-landing",
+      cwd: path.resolve(__dirname, ".."),
       script: "node_modules/next/dist/bin/next",
       args: "start -p 3000",
       interpreter: resolveNodeInterpreter(),

@@ -15,7 +15,8 @@ Adapted from the Nahla production pipeline (`.github/workflows/main.yml` in Nahl
 2. **Node.js 20.9+** installed **system-wide** (Next.js 16 will not run on Node 18; PM2 uses the system `node`, not only the Actions job Node).
 3. **PM2** (`npm i -g pm2`).
 4. **rsync** available on the runner host.
-5. Deploy directory: `/var/www/idar-landing` (override via workflow `DEPLOY_PATH` if needed).
+5. A PM2 process named `idar-landing` already running from its deploy directory (see first-time setup). The runner needs no sudo: the workflow deploys to that process's working directory.
+6. The runner carries the `idar-01` label.
 
 ## Upgrade Node.js on the server (required)
 
@@ -39,25 +40,30 @@ pm2 update
 ## First-time server setup
 
 ```bash
-sudo mkdir -p /var/www/idar-landing
-sudo chown -R $USER:$USER /var/www/idar-landing
+git clone https://github.com/ZeyadWaell/landingpage_idar.git ~/apps/idar-landing
+cd ~/apps/idar-landing
 
 # Create production env (not overwritten by deploy)
-cat > /var/www/idar-landing/.env <<'EOF'
+cat > .env <<'EOF'
 NODE_ENV=production
 PORT=3000
 EOF
+
+npm ci --include=dev
+NODE_ENV=production npm run build
+pm2 start cicd/ecosystem.config.cjs
+pm2 save
 ```
 
-Point your reverse proxy (nginx/Caddy) at `http://127.0.0.1:3000`.
+Point your reverse proxy (Apache/nginx/Caddy) at `http://127.0.0.1:3000`.
 
 ## Deploy flow
 
 1. Merge changes into the `production` branch.
-2. Workflow checks out code on the self-hosted runner.
+2. Workflow checks out code on the self-hosted runner and asks PM2 where `idar-landing` runs. It stops here if the process is missing.
 3. Files are synced with `rsync` (`.env`, `node_modules`, `.next` are excluded).
 4. `npm ci --include=dev` and `npm run build` run on the server (dev deps are required for Tailwind/TypeScript at build time).
-5. PM2 reloads the `idar-landing` process via `cicd/ecosystem.config.cjs`.
+5. PM2 restarts the `idar-landing` process, keeping its port and working directory.
 
 ## Branch strategy
 
@@ -76,7 +82,6 @@ git push -u origin production
 Edit `.github/workflows/deploy-production.yml`:
 
 - `APP_NAME` — PM2 process name (default: `idar-landing`)
-- `DEPLOY_PATH` — server install path (default: `/var/www/idar-landing`)
 - `NODE_VERSION` — Node runtime (default: `20.x`)
 
 Edit `cicd/ecosystem.config.cjs` if you change port, memory limits, or instance count.

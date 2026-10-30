@@ -3,15 +3,16 @@ name: Deploy to Production
 on:
   push:
     branches: [production]
+  workflow_dispatch:
 
 env:
   APP_NAME: idar-landing
-  DEPLOY_PATH: /var/www/idar-landing
   NODE_VERSION: "20.x"
 
 jobs:
   deploy:
-    runs-on: self-hosted
+    # Only the runner installed on idar-01 has this label, so the old server never picks this up.
+    runs-on: [self-hosted, idar-01]
 
     steps:
       - name: Checkout
@@ -28,8 +29,22 @@ jobs:
           node -v
           node -e "const v=process.versions.node.split('.').map(Number); if(v[0]<20) { console.error('Node 20+ required for Next.js 16. Upgrade system Node — PM2 uses the same node as the shell.'); process.exit(1) }"
 
-      - name: Ensure target directory
-        run: sudo mkdir -p ${{ env.DEPLOY_PATH }}
+      - name: Find the running app
+        run: |
+          export PATH="$HOME/.npm-global/bin:$PATH"
+          # Deploy to wherever PM2 runs the app, and stop before touching files if it isn't there
+          APP=$(pm2 jlist | node -e 'const p=JSON.parse(require("fs").readFileSync(0)).find((a)=>a.name===process.argv[1]);console.log(p?p.pm2_env.pm_cwd:"")' "$APP_NAME")
+          if [ -z "$APP" ]; then
+            echo "::error::No PM2 process named $APP_NAME on $(hostname)"
+            pm2 list
+            exit 1
+          fi
+          if ! grep -q '"name": "next_js_landing_page"' "$APP/package.json"; then
+            echo "::error::$APP does not look like the landing page, refusing to sync into it"
+            exit 1
+          fi
+          echo "Deploying to $APP on $(hostname)"
+          echo "DEPLOY_PATH=$APP" >> "$GITHUB_ENV"
 
       - name: Sync files to server path (keep server .env)
         run: |
@@ -40,28 +55,21 @@ jobs:
             --exclude ".env" \
             --exclude ".env.*" \
             --exclude ".cursor" \
-            ./ ${{ env.DEPLOY_PATH }}/
-          sudo chown -R $(whoami):$(whoami) ${{ env.DEPLOY_PATH }}
+            ./ "$DEPLOY_PATH"/
 
       - name: Install and build
         env:
           NEXT_TELEMETRY_DISABLED: 1
         run: |
-          cd ${{ env.DEPLOY_PATH }}
+          cd "$DEPLOY_PATH"
           # Install devDependencies too — Tailwind/PostCSS/TypeScript are required for next build
           npm ci --include=dev
           NODE_ENV=production npm run build
 
-      - name: Start or reload with PM2
-        env:
-          NODE_ENV: production
-          PM2_HOME: ${{ env.HOME }}/.pm2
+      - name: Restart with PM2
         run: |
-          command -v pm2 >/dev/null 2>&1 || sudo npm i -g pm2
-
-          cd ${{ env.DEPLOY_PATH }}
-          # Delete + start so PM2 picks up ecosystem script/mode changes (reload keeps stale config)
-          pm2 delete ${{ env.APP_NAME }} 2>/dev/null || true
-          pm2 start cicd/ecosystem.config.cjs
+          export PATH="$HOME/.npm-global/bin:$PATH"
+          # Restart keeps the process's own port and working directory
+          pm2 restart "$APP_NAME"
           pm2 save
           pm2 status
