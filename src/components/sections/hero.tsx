@@ -6,6 +6,7 @@ import { useEffect, useLayoutEffect, useMemo, useRef } from "react";
 import { useLanguage } from "@/i18n/language-provider";
 import { Button } from "@/components/ui/button";
 import { HeroShowcaseImage } from "@/components/sections/hero-showcase-image";
+import { HeroFirstOrbit } from "@/components/sections/hero-first-orbit";
 import { OtaOrbit } from "@/components/sections/ota-orbit";
 import { cn } from "@/lib/utils";
 
@@ -133,32 +134,30 @@ export function Hero() {
         <div className="absolute top-1/3 left-[-6%] h-[360px] w-[360px] rounded-full bg-[#d1e0ff]/30 blur-3xl" />
       </div>
 
-      <div className="relative w-full min-h-[540px] overflow-hidden rounded-[5px] sm:min-h-[580px] lg:min-h-[620px]">
+      {/* First part only — desk bg + laptop + pure SVG circle orbit */}
+      <div className="relative w-full min-h-[540px] overflow-x-clip overflow-y-visible rounded-[5px] sm:min-h-[580px] lg:min-h-[620px]">
         <div className="absolute inset-0 overflow-hidden rounded-[5px]">
           <Image
-            src="/background.png"
+            src="/hero-desk-bg.jpg"
             alt=""
             fill
             priority
             sizes="100vw"
-            className={cn(
-              "pointer-events-none object-cover object-center transition-transform duration-300",
-              !isAr && "-scale-x-100",
-            )}
+            className="pointer-events-none object-cover object-center"
           />
           <div
-            className="pointer-events-none absolute inset-0 bg-gradient-to-r from-white/95 via-white/80 to-white/40 rtl:bg-gradient-to-l"
+            className="pointer-events-none absolute inset-0 bg-gradient-to-r from-white/92 via-white/75 to-white/35 rtl:bg-gradient-to-l"
             aria-hidden
           />
         </div>
 
-        <div className="relative z-10 flex min-h-[540px] w-full flex-col justify-center px-4 py-8 sm:min-h-[580px] sm:px-6 sm:py-10 lg:min-h-[620px] lg:items-start lg:px-10 lg:py-12 xl:px-14 2xl:px-20">
+        <div className="relative z-10 grid min-h-[540px] w-full grid-cols-1 items-center gap-6 overflow-visible px-4 py-8 sm:min-h-[580px] sm:px-6 sm:py-10 lg:min-h-[620px] lg:grid-cols-2 lg:gap-4 lg:px-10 lg:py-12 xl:px-14 2xl:px-20">
           <motion.div
             custom={0}
             variants={fade}
             initial="hidden"
             animate="show"
-            className="max-w-2xl text-start"
+            className="relative z-20 max-w-xl text-start lg:max-w-2xl"
           >
             <span className="inline-flex items-center gap-2 rounded-full border border-[#d1e0ff] bg-[#eff4ff]/80 px-4 py-1.5 text-sm font-medium text-[#0040c1]">
               <svg className="h-4 w-4 shrink-0" viewBox="0 0 24 24" fill="none" aria-hidden>
@@ -213,6 +212,22 @@ export function Hero() {
               </Button>
             </motion.div>
           </motion.div>
+
+          <div className="relative z-10 mx-auto flex w-full max-w-[640px] items-center justify-center overflow-visible lg:max-w-none lg:self-stretch">
+            <div className="relative aspect-[5/4] w-full min-h-[320px] overflow-visible sm:min-h-[380px] lg:absolute lg:inset-y-4 lg:left-0 lg:right-0 lg:aspect-auto lg:min-h-0">
+              <div className="pointer-events-none absolute inset-0 z-20 flex items-center justify-center pt-16 sm:pt-20 lg:pt-24">
+                <HeroShowcaseImage
+                  centered
+                  className="pointer-events-auto"
+                  src="/hero-laptop-v2.png"
+                  width={1365}
+                  height={864}
+                  imageClassName="w-[min(78vw,340px)] sm:w-[min(70vw,420px)] md:w-[min(58vw,460px)] lg:w-[min(40vw,480px)] xl:w-[min(38vw,520px)]"
+                />
+              </div>
+              <HeroFirstOrbit />
+            </div>
+          </div>
         </div>
       </div>
 
@@ -229,7 +244,13 @@ export function Hero() {
             />
 
             <div className="pointer-events-none absolute inset-0 z-20 flex items-center justify-center px-4">
-              <HeroShowcaseImage centered className="pointer-events-auto" />
+              <HeroShowcaseImage
+                centered
+                className="pointer-events-auto"
+                src="/hero-laptop-v2.png"
+                width={1365}
+                height={864}
+              />
             </div>
 
             <HeroMarquee phrases={t.hero.marqueePhrases} isAr={isAr} />

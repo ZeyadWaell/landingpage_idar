@@ -12,11 +12,20 @@ const easeOut = [0.22, 1, 0.36, 1] as const;
 type HeroShowcaseImageProps = {
   centered?: boolean;
   className?: string;
+  /** Optional override — used by the top hero so the lower band stays on /laptop.png */
+  src?: string;
+  width?: number;
+  height?: number;
+  imageClassName?: string;
 };
 
 export function HeroShowcaseImage({
   centered = false,
   className,
+  src = HERO_MOCKUP_SRC,
+  width = 1536,
+  height = 1024,
+  imageClassName,
 }: HeroShowcaseImageProps) {
   const { locale } = useLanguage();
   const isRtl = locale === "ar";
@@ -46,16 +55,17 @@ export function HeroShowcaseImage({
           )}
         >
           <Image
-            src={HERO_MOCKUP_SRC}
+            src={src}
             alt="Hotel property management dashboard on laptop"
-            width={1536}
-            height={1024}
+            width={width}
+            height={height}
             priority
             className={cn(
               "relative h-auto select-none drop-shadow-2xl transition-transform duration-300",
-              centered
-                ? "w-[min(88vw,380px)] sm:w-[min(84vw,480px)] md:w-[min(80vw,560px)] lg:w-[min(76vw,640px)]"
-                : "w-[min(92vw,440px)] sm:w-[min(88vw,560px)] md:w-[min(86vw,640px)] lg:w-[min(84vw,720px)]",
+              imageClassName ??
+                (centered
+                  ? "w-[min(88vw,380px)] sm:w-[min(84vw,480px)] md:w-[min(80vw,560px)] lg:w-[min(76vw,640px)]"
+                  : "w-[min(92vw,440px)] sm:w-[min(88vw,560px)] md:w-[min(86vw,640px)] lg:w-[min(84vw,720px)]"),
               isRtl && "-scale-x-100",
             )}
           />
