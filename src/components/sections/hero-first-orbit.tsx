@@ -21,14 +21,14 @@ const integrations = [
   {
     name: "Ministry of Tourism",
     logo: "/integrations/ministry-tourism.png",
-    top: "-12%",
+    top: "-13%",
     side: "12%",
     width: 120,
   },
   {
     name: "Shomoos",
     logo: "/integrations/shomoos.png",
-    top: "-12%",
+    top: "-13%",
     side: "12%",
     width: 112,
   },
