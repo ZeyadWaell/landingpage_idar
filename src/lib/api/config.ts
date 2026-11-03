@@ -1,7 +1,7 @@
 const DEFAULT_BASE = "/api/nahla";
 
 /** Zaaer dashboard (Angular app) — auth is handed off to it after login here. */
-const DEFAULT_DASHBOARD = "https://app.moodarre.com";
+const DEFAULT_DASHBOARD = "https://app.idar.sa";
 
 export function getApiBaseUrl() {
   return process.env.NEXT_PUBLIC_API_BASE_URL ?? DEFAULT_BASE;
